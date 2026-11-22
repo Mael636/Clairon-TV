@@ -20,6 +20,8 @@ Aucune source EPG n'est activée dans cette version. La page publique [XML TV FR
 
 Avant d'activer un flux, il faudra examiner les conditions/licences en vigueur portant précisément sur les données EPG, identifier la source et l'attribution requise, confirmer la couverture des chaînes françaises, les règles de fréquence/mise en cache, et tester la fraîcheur, les fuseaux horaires, les identifiants des chaînes et les droits de republication. Faute de validation, l'état vide est le comportement attendu, pas un incident.
 
+La [revue documentaire des sources EPG](docs/EPG-SOURCES.md), datée du 22 novembre 2026, ne valide ni n’autorise aucun flux : aucune source n’est activée et aucun programme EPG n’est intégré. Elle consigne les vérifications, limites et demandes de clarification à effectuer avant toute reprise.
+
 ### Catalogue de séries
 
 La recherche et les fiches de séries utilisent l'API publique [TVmaze](https://www.tvmaze.com/api) (`/search/shows` et `/shows/{id}`). C'est un catalogue éditorial, **pas** un EPG de chaînes françaises; ses résultats ne sont jamais introduits dans la grille. Les résumés sont rendus comme texte, les images externes chargées uniquement en HTTPS. Les favoris stockent uniquement des identifiants TVmaze sur l'appareil. Les fiches sortantes pointent vers TVmaze. Clairon ne référence ni ne revendique de bandes-annonces. Consultez les [conditions d'utilisation de TVmaze](https://www.tvmaze.com/terms-of-use) et celles des ayants droit.

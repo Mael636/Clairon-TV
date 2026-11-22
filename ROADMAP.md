@@ -2,6 +2,10 @@
 
 Cette feuille de route est une proposition de produit et d'architecture. Aucune des étapes ci-dessous n'est engagée par le commit de la version actuelle. Les jalons EPG dépendent d'une autorisation documentée; une source indisponible ou aux droits incertains n'est jamais remplacée par des données fictives.
 
+## État EPG au 22 novembre 2026
+
+La [revue documentaire des sources](docs/EPG-SOURCES.md) n’a autorisé ni configuré de flux et n’établit pas les droits de Clairon sur les grilles. L’état vide reste donc en place. Avant toute intégration, obtenir et consigner les autorisations, conditions d’accès et d’attribution applicables, préciser les besoins produit, puis reprendre les critères de V2.1 et V2.2. Aucune étape d’intégration EPG n’est engagée par cette note.
+
 ## V2.1 — Contrat de données et preuve de provenance
 
 - Évaluer un fournisseur EPG ou XMLTV chaîne par chaîne : titulaire/source des données, licence/réutilisation commerciale ou non, attribution, fréquence permise, cache, redistribution, politique de retrait et contact de signalement.
@@ -48,7 +52,7 @@ Cette feuille de route est une proposition de produit et d'architecture. Aucune 
 - Suite de tests unitaires (normalisation, filtrage, fuseaux, favoris), tests d'intégration (source simulée au test, jamais au build de production), parcours navigateur mobile/desktop et tests a11y automatisés/manuels.
 - Tests de contrat par snapshots minimisés/anonymisés dont la licence permet la conservation; fixtures fictives marquées exclusivement test et garde CI qui échoue si elles se glissent en bundle.
 - Stratégie erreurs : états vide/chargement/périmé/partiel/échec distincts, nouvelle tentative manuelle, messages non techniques; Sentry/analytics uniquement après décision explicite et revue vie privée.
-- Sécurité front : politique CSP/ressources externes documentées, inventaire des données et rétention.
+- Sécurité front : politique CSP/ressources externes documentées, assainissement des champs tiers, protections liens sortants, vérification dépendances; inventaire des données et rétention.
 - Déploiement progressif, page d'état des flux, journal des versions de source et procédure de retrait/incident.
 
 **Critères d'acceptation :** aucun secret dans le client, aucune télémétrie sans décision informée, contrôles régression/contraste/clavier réussis, et rollback rapide du flux indépendamment du déploiement de l'app.
