@@ -1,0 +1,10 @@
+{
+  "name": "clairon-tv",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Guide TV statique — aucun build requis",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "check": "node --check app.js && node --check core.js"
+  }
+}

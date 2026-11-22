@@ -53,3 +53,16 @@ test('date navigation returns the selected local calendar day', () => {
   assert.equal(date.getMonth(), 10);
   assert.equal(date.getDate(), 24);
 });
+
+test('date navigation preserves local calendar days across DST changes', () => {
+  // Run with TZ=Europe/Paris so this exercises the spring clock change.
+  const before = new Date(2026, 2, 28, 12, 0, 0);
+  const next = core.dateAtOffset(before, 1);
+  assert.equal(next.getFullYear(), 2026);
+  assert.equal(next.getMonth(), 2);
+  assert.equal(next.getDate(), 29);
+  assert.equal(next.getHours(), 12);
+  const following = core.dateAtOffset(next, 1);
+  assert.equal(following.getDate(), 30);
+  assert.equal(following.getHours(), 12);
+});

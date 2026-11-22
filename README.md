@@ -38,10 +38,10 @@ La navigation par date est prête côté interface mais ne peut pas afficher un 
 
 ## Tests
 
-Avec Node.js 18 ou plus récent :
+Avec Node.js 18 ou plus récent, sans installer de dépendances :
 
 ```sh
-node --test tests/*.test.js
+TZ=Europe/Paris node --test tests/*.test.js
 node --check app.js
 node --check core.js
 ```

@@ -53,3 +53,20 @@ test('app theme toggle persists locally and updates browser theme color', () => 
   assert.equal(meta.content, '#171a19');
   assert.equal(elements['theme-toggle'].attributes['aria-label'], 'Activer le thème clair');
 });
+
+test('calendar controls move one day and return to today', () => {
+  const { elements } = launchApp();
+  const today = elements['date-label'].textContent;
+  elements['next-day'].listeners.click();
+  const tomorrow = elements['date-label'].textContent;
+  assert.notEqual(tomorrow, today);
+  elements['today-button'].listeners.click();
+  assert.equal(elements['date-label'].textContent, today);
+});
+
+test('published page keeps the EPG disabled until reuse rights are verified', () => {
+  const html = fs.readFileSync(require.resolve('../index.html'), 'utf8');
+  assert.match(html, /Aucune source EPG autorisée configurée/);
+  assert.match(html, /ni grille ni émissions « en direct »/);
+  assert.doesNotMatch(html, /data-programme|data-epg-event/);
+});
