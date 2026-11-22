@@ -11,6 +11,7 @@ test('favorites storage ignores malformed, duplicate, and invalid ids', () => {
   assert.deepEqual(core.readFavorites(storageWith('[4,4,-2,"3",0,9]')), [4, 9]);
   assert.deepEqual(core.readFavorites(storageWith('not json')), []);
   assert.deepEqual(core.readFavorites(storageWith('{"id":4}')), []);
+  assert.deepEqual(core.readFavorites({ getItem() { throw new Error('blocked'); } }), []);
 });
 
 test('favorite toggle adds and removes a valid show id', () => {
@@ -35,6 +36,15 @@ test('only HTTPS image URLs are accepted', () => {
   assert.equal(core.safeImageUrl('https://static.tvmaze.com/poster.jpg'), 'https://static.tvmaze.com/poster.jpg');
   assert.equal(core.safeImageUrl('http://example.org/image'), '');
   assert.equal(core.safeImageUrl('javascript:alert(1)'), '');
+});
+
+test('date navigation crosses month boundaries without mutating its input', () => {
+  const input = new Date(2026, 0, 31, 12);
+  const date = core.dateAtOffset(input, 1);
+  assert.equal(date.getMonth(), 1);
+  assert.equal(date.getDate(), 1);
+  assert.equal(input.getMonth(), 0);
+  assert.equal(input.getDate(), 31);
 });
 
 test('date navigation returns the selected local calendar day', () => {

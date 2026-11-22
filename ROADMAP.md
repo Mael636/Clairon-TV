@@ -48,7 +48,7 @@ Cette feuille de route est une proposition de produit et d'architecture. Aucune 
 - Suite de tests unitaires (normalisation, filtrage, fuseaux, favoris), tests d'intégration (source simulée au test, jamais au build de production), parcours navigateur mobile/desktop et tests a11y automatisés/manuels.
 - Tests de contrat par snapshots minimisés/anonymisés dont la licence permet la conservation; fixtures fictives marquées exclusivement test et garde CI qui échoue si elles se glissent en bundle.
 - Stratégie erreurs : états vide/chargement/périmé/partiel/échec distincts, nouvelle tentative manuelle, messages non techniques; Sentry/analytics uniquement après décision explicite et revue vie privée.
-- Sécurité front : politique CSP/ressources externes documentées, assainissement des champs tiers, protections liens sortants, vérification dépendances; inventaire des données et rétention.
+- Sécurité front : politique CSP/ressources externes documentées, inventaire des données et rétention.
 - Déploiement progressif, page d'état des flux, journal des versions de source et procédure de retrait/incident.
 
 **Critères d'acceptation :** aucun secret dans le client, aucune télémétrie sans décision informée, contrôles régression/contraste/clavier réussis, et rollback rapide du flux indépendamment du déploiement de l'app.

@@ -22,7 +22,7 @@ Avant d'activer un flux, il faudra examiner les conditions/licences en vigueur p
 
 ### Catalogue de séries
 
-La recherche et les fiches de séries utilisent l'API publique [TVmaze](https://www.tvmaze.com/api) (`/search/shows` et `/shows/{id}`). C'est un catalogue éditorial, **pas** un EPG de chaînes françaises; ses résultats ne sont jamais introduits dans la grille. Les résumés sont rendus comme texte, les images externes chargées uniquement en HTTPS. Les favoris stockent uniquement des identifiants TVmaze sur l'appareil. Les fiches sortantes pointent vers TVmaze. Le bouton « Rechercher une bande-annonce » ouvre une recherche YouTube : il ne certifie ni ne fournit une vidéo, et n'annonce pas la disponibilité des droits. Consultez les [conditions d'utilisation de TVmaze](https://www.tvmaze.com/terms-of-use) et celles des ayants droit.
+La recherche et les fiches de séries utilisent l'API publique [TVmaze](https://www.tvmaze.com/api) (`/search/shows` et `/shows/{id}`). C'est un catalogue éditorial, **pas** un EPG de chaînes françaises; ses résultats ne sont jamais introduits dans la grille. Les résumés sont rendus comme texte, les images externes chargées uniquement en HTTPS. Les favoris stockent uniquement des identifiants TVmaze sur l'appareil. Les fiches sortantes pointent vers TVmaze. Clairon ne référence ni ne revendique de bandes-annonces. Consultez les [conditions d'utilisation de TVmaze](https://www.tvmaze.com/terms-of-use) et celles des ayants droit.
 
 ## Fonctionnalités
 
@@ -39,7 +39,7 @@ La navigation par date est prête côté interface mais ne peut pas afficher un 
 Avec Node.js 18 ou plus récent :
 
 ```sh
-node --test tests/core.test.js
+node --test tests/*.test.js
 node --check app.js
 node --check core.js
 ```
