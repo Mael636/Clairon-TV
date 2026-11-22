@@ -1,25 +1,122 @@
 'use strict';
-const channels = [
-  {id:'tf1',name:'TF1',kind:'Généraliste',abbr:'TF1',bg:'#315b87',fg:'#fff',tone:'#9dc8ee',shows:[['Le Grand Bain','Film','Comédie'],['Le JT en clair','Information','Journal'],['Terrain d’entente','Série','Épisode 4'],['Les dessous de Lyon','Documentaire','Société'],['Une affaire de famille','Film','Drame'],['Après minuit','Série','Épisode 2']]},
-  {id:'fr2',name:'France 2',kind:'Généraliste',abbr:'2',bg:'#4c7791',fg:'#fff',tone:'#a8d0e7',shows:[['Le goût des autres','Film','Comédie dramatique'],['Le Journal du soir','Information','Journal'],['Le dernier passage','Série','Épisode 6'],['Vivre la Loire','Documentaire','Nature'],['Le Grand Bain','Film','Comédie'],['À découvert','Série','Épisode 1']]},
-  {id:'fr3',name:'France 3',kind:'Régionale',abbr:'3',bg:'#705ba0',fg:'#fff',tone:'#c3acfa',shows:[['Chroniques du port','Série','Épisode 8'],['Le Journal régional','Information','Régions'],['La maison d’en face','Film','Drame'],['France, côté jardin','Documentaire','Nature'],['Un drôle de dimanche','Film','Comédie'],['L’inconnu du quai','Série','Épisode 3']]},
-  {id:'arte',name:'Arte',kind:'Culture',abbr:'ARTE',bg:'#bd9f48',fg:'#19170f',tone:'#efcf75',shows:[['Les heures bleues','Film','Drame'],['Le monde en mouvement','Documentaire','Histoire'],['La ville invisible','Série','Épisode 2'],['Lumières du Nord','Documentaire','Voyage'],['La traversée','Film','Aventure'],['Récits de nuit','Série','Épisode 5']]},
-  {id:'m6',name:'M6',kind:'Généraliste',abbr:'M6',bg:'#488d69',fg:'#fff',tone:'#94dfaa',shows:[['Cuisine de saison','Divertissement','Cuisine'],['Le Journal de 19 h 45','Information','Journal'],['À table, les voisins !','Divertissement','Nouveau'],['La fabrique des chefs','Série','Épisode 3'],['Dernier arrêt','Film','Thriller'],['Nos vies en partage','Série','Épisode 1']]},
-  {id:'fr5',name:'France 5',kind:'Découverte',abbr:'5',bg:'#47859a',fg:'#fff',tone:'#91d3e7',shows:[['Planète en partage','Documentaire','Nature'],['Le dessous des cartes','Magazine','Géopolitique'],['Les villes du futur','Documentaire','Sciences'],['Sur la piste des loups','Documentaire','Nature'],['Terres secrètes','Documentaire','Voyage'],['L’esprit des lieux','Documentaire','Culture']]},
-  {id:'c8',name:'Canal 8',kind:'Cinéma',abbr:'C8',bg:'#ab6347',fg:'#fff',tone:'#edab8b',shows:[['Une chambre à part','Film','Romance'],['Ce soir, on en parle','Magazine','Société'],['Les visages du doute','Série','Épisode 7'],['Le dernier été','Film','Drame'],['Le Grand Bain','Film','Comédie'],['La ligne blanche','Série','Épisode 2']]},
-  {id:'lcp',name:'LCP',kind:'Débat',abbr:'LCP',bg:'#846e54',fg:'#fff',tone:'#d3bb93',shows:[['La fabrique des idées','Magazine','Débat'],['Questions de société','Magazine','Débat'],['Au cœur des archives','Documentaire','Histoire'],['Regards croisés','Magazine','Débat'],['Les grands dossiers','Documentaire','Société'],['Paroles publiques','Magazine','Débat']]}
-];
-const palettes=[['#303c2c','#d6fa76'],['#342d3b','#cdb5e8'],['#293943','#9bcde2'],['#40342c','#f0bb8d'],['#343637','#d0d8bf'],['#373247','#c5baf3'],['#3e3033','#ed9e98'],['#293c39','#9ed4c6']];
-const state={dayOffset:0,filter:'all',theme:localStorage.getItem('clairon-theme')||'dark',timer:null};
-const $=s=>document.querySelector(s), esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function currentStart(){const d=new Date();d.setDate(d.getDate()+state.dayOffset);d.setMinutes(0,0,0);d.setHours(d.getHours()-1);return d}
-function timeAt(d,mins){const t=new Date(d.getTime()+mins*60000);return t.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
-function renderDate(){const d=new Date();d.setDate(d.getDate()+state.dayOffset);$('#date-label').textContent=state.dayOffset===0?'Aujourd’hui · '+d.toLocaleDateString('fr-FR',{day:'numeric',month:'long'}):d.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});}
-function displayNow(base){const actual=new Date();return new Date(base.getTime()+actual.getMinutes()*60000+actual.getSeconds()*1000)}
-function activeAt(row,base,now){for(let i=0;i<row.shows.length;i++){const start=new Date(base.getTime()+i*60*60000),end=new Date(start.getTime()+60*60000);if(now>=start&&now<end)return {item:row.shows[i],index:i,start,end,progress:Math.round((now-start)/(end-start)*100)}}return null}
-function renderGrid(){const base=currentStart(),now=displayNow(base);let html='<div class="channel-head">CHAÎNE</div>';for(let i=0;i<6;i++)html+=`<div class="time-head">${timeAt(base,i*60)}</div>`;channels.forEach((ch,ci)=>{const active=activeAt(ch,base,now);html+=`<div class="channel-cell"><span class="channel-logo" style="--logo-bg:${ch.bg};--logo-fg:${ch.fg}">${esc(ch.abbr)}</span><span class="channel-name">${esc(ch.name)}<span class="channel-kind">${esc(ch.kind)}</span></span></div>`;ch.shows.forEach((s,i)=>{const live=active&&active.index===i;const kind=s[1];if(state.filter==='films'&&!['Film','Série'].includes(kind)){html+='<div class="program-cell"></div>';return}const [wash,tone]=palettes[ci];html+=`<div class="program-cell"><button class="program-card${live?' current':''}" type="button" data-channel="${ch.id}" data-index="${i}" style="--wash:color-mix(in srgb,${wash} 47%,var(--surface));--tone:${tone};--progress:${live?active.progress:0}%" aria-label="${esc(s[0])}, ${esc(ch.name)}, ${timeAt(base,i*60)}"><span class="program-time">${timeAt(base,i*60)}${live?' · EN COURS':''}</span><span class="program-title">${esc(s[0])}</span><span class="program-sub">${esc(kind)} · ${esc(s[2])}</span></button></div>`})});$('#tv-grid').innerHTML=html;$('#tv-grid').querySelectorAll('.program-card').forEach(el=>el.addEventListener('click',()=>openShow(channels.find(c=>c.id===el.dataset.channel),Number(el.dataset.index))));}
-function renderLive(){const base=currentStart(),now=displayNow(base),list=channels.map((ch,i)=>({ch,i,active:activeAt(ch,base,now)})).filter(x=>x.active);$('#live-count').textContent=String(list.length).padStart(2,'0');$('#live-rail').innerHTML=list.map(({ch,i,active})=>{const [wash,tone]=palettes[i],s=active.item;return `<article class="live-card" tabindex="0" role="button" data-channel="${ch.id}" data-index="${active.index}" style="--wash:${wash};--tone:${tone}"><div class="live-card-top"><span class="channel-pill">${esc(ch.name)}</span><span class="on-air"><i class="live-dot"></i> DIRECT</span></div><h3 class="live-card-title">${esc(s[0])}</h3><div class="live-card-meta">${esc(s[1])} · se termine à ${timeAt(base,(active.index+1)*60)}</div><div class="live-progress"><span style="width:${active.progress}%"></span></div></article>`}).join('');$('#live-rail').querySelectorAll('.live-card').forEach(el=>{const go=()=>openShow(channels.find(c=>c.id===el.dataset.channel),Number(el.dataset.index));el.addEventListener('click',go);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}})});}
-function openShow(ch,index){const item=ch.shows[index],ci=channels.indexOf(ch),[wash,tone]=palettes[ci],base=currentStart(),now=new Date(),active=activeAt(ch,base,now),start=new Date(base.getTime()+index*60*60000);const blurb={Film:`Une soirée de télévision, une histoire à découvrir. « ${item[0]} » s’invite dans cette grille de démonstration pour illustrer la fiche programme de Clairon.`,Série:`Un nouvel épisode de « ${item[0]} ». Retrouvez les détails et les épisodes associés dans le catalogue de séries TVmaze.`,Information:`Le rendez-vous d’information de ${ch.name}, présenté ici à titre d’exemple de programmation.`,Documentaire:`Un regard curieux sur le monde avec « ${item[0]} ». Ce programme figure dans la grille fictive de démonstration.`,Divertissement:`Un rendez-vous divertissant à partager, présenté dans la grille éditoriale de démonstration.`,Magazine:`Un magazine de discussion et de découverte, à titre d’exemple dans la grille Clairon.`};$('#dialog-content').innerHTML=`<div class="detail-art" style="--wash:${wash};--tone:${tone}"><span class="detail-channel">${esc(ch.name)} · ${timeAt(start,0)}${active&&active.index===index?' · EN COURS':''}</span><h2 id="dialog-title">${esc(item[0])}</h2></div><div class="detail-body"><div class="detail-tags"><span class="detail-tag">${esc(item[1])}</span><span class="detail-tag">${esc(item[2])}</span><span class="detail-tag">${timeAt(start,0)} – ${timeAt(start,60)}</span><span class="detail-tag">Grille fictive</span></div><p>${esc(blurb[item[1]]||`« ${item[0]} », un rendez-vous de ${item[2].toLowerCase()} sur ${ch.name}, proposé à titre d’exemple.`)}</p><div class="detail-actions"><a class="detail-action primary" href="https://www.youtube.com/results?search_query=${encodeURIComponent(item[0]+' bande annonce')}" target="_blank" rel="noreferrer">↗ Chercher une bande-annonce</a>${item[1]==='Série'?`<button class="detail-action" type="button" data-tvmaze="${esc(item[0])}">⌕ Fiche série TVmaze</button>`:''}</div></div>`;$('#show-dialog').showModal();const tv=$('[data-tvmaze]');if(tv)tv.addEventListener('click',()=>{$('#show-dialog').close();openSearch(tv.dataset.tvmaze)});}
-function openSearch(query=''){$('#search-dialog').showModal();if(query){$('#modal-search-input').value=query;searchTvmaze(query)}else setTimeout(()=>$('#modal-search-input').focus(),80)}
-let searchController=null;async function searchTvmaze(q){const out=$('#search-results');if(searchController)searchController.abort();if(!q.trim()){out.innerHTML='';return}searchController=new AbortController();out.innerHTML='<div class="loading">Recherche dans TVmaze…</div>';try{const res=await fetch(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(q.trim())}`,{signal:searchController.signal});if(!res.ok)throw new Error('TVmaze indisponible');const data=await res.json();if(!data.length){out.innerHTML='<div class="search-empty">Aucune série trouvée. Essayez un autre titre.</div>';return}out.innerHTML=data.slice(0,6).map(({show})=>{const img=show.image?.medium?`<img src="${esc(show.image.medium)}" alt="" loading="lazy">`:'<span class="result-placeholder">c.</span>';const summary=(show.summary||'Fiche TVmaze, sans résumé disponible.').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();const url=typeof show.url==='string'&&/^https:\/\/www\.tvmaze\.com\//.test(show.url)?show.url:'https://www.tvmaze.com/';return `<article class="search-result">${img}<div><div class="result-title">${esc(show.name)}</div><div class="result-meta">${esc([show.language,show.genres?.slice(0,2).join(' · '),show.premiered?.slice(0,4)].filter(Boolean).join(' · ')||'Série TV')}</div><p class="result-summary">${esc(summary.slice(0,145))}${summary.length>145?'…':''}</p></div><a class="result-link" href="${esc(url)}" target="_blank" rel="noreferrer" aria-label="Ouvrir la fiche de ${esc(show.name)}">Fiche ↗</a></article>`}).join('')}catch(err){if(err.name==='AbortError')return;out.innerHTML='<div class="search-empty">Le catalogue ne répond pas pour le moment. Vérifiez votre connexion ou réessayez.</div>'}}
-let debounce;$('#search-input').addEventListener('focus',()=>openSearch($('#search-input').value));$('#search-input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();openSearch(e.target.value)}});$('#modal-search-input').addEventListener('input',e=>{clearTimeout(debounce);debounce=setTimeout(()=>searchTvmaze(e.target.value),280)});$('#discover-button').addEventListener('click',()=>openSearch());$('#theme-toggle').addEventListener('click',()=>{state.theme=state.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=state.theme;localStorage.setItem('clairon-theme',state.theme);$('#theme-toggle').setAttribute('aria-label',state.theme==='dark'?'Passer au thème clair':'Passer au thème sombre')});$('#prev-day').addEventListener('click',()=>{state.dayOffset--;renderDate();renderGrid();renderLive()});$('#next-day').addEventListener('click',()=>{state.dayOffset++;renderDate();renderGrid();renderLive()});$('#date-label').addEventListener('click',()=>{state.dayOffset=0;renderDate();renderGrid();renderLive()});document.querySelectorAll('.view-button').forEach(b=>b.addEventListener('click',()=>{state.filter=b.dataset.view;document.querySelectorAll('.view-button').forEach(x=>x.classList.toggle('selected',x===b));renderGrid()}));$('#dialog-close').addEventListener('click',()=>$('#show-dialog').close());$('#search-close').addEventListener('click',()=>$('#search-dialog').close());$('#show-dialog').addEventListener('click',e=>{if(e.target===$('#show-dialog'))$('#show-dialog').close()});$('#search-dialog').addEventListener('click',e=>{if(e.target===$('#search-dialog'))$('#search-dialog').close()});document.addEventListener('keydown',e=>{if(e.key==='/'&&!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){e.preventDefault();openSearch()}});document.documentElement.dataset.theme=state.theme;$('#theme-toggle').setAttribute('aria-label',state.theme==='dark'?'Passer au thème clair':'Passer au thème sombre');renderDate();renderGrid();renderLive();setInterval(()=>{renderGrid();renderLive()},60000);
+(() => {
+  const core = window.ClaironCore;
+  const $ = selector => document.querySelector(selector);
+  const state = { offset: 0, filter: 'all', favorites: core.readFavorites(localStorage), timer: 0, controller: null };
+  const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+  const today = new Date();
+  function renderDate() {
+    const date = core.dateAtOffset(today, state.offset);
+    $('#date-label').textContent = state.offset === 0 ? `Aujourd’hui · ${date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}` : date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  }
+  function showToast(message) {
+    const toast = $('#toast'); toast.textContent = message; toast.classList.add('visible');
+    clearTimeout(state.timer); state.timer = setTimeout(() => toast.classList.remove('visible'), 2400);
+  }
+  function saveFavorites() {
+    try { localStorage.setItem(core.FAVORITES_KEY, JSON.stringify(state.favorites)); }
+    catch (_) { showToast('Enregistrement indisponible dans ce navigateur.'); }
+    $('#favorite-count').textContent = String(state.favorites.length);
+  }
+  function openSearch(query = '') {
+    const dialog = $('#search-dialog');
+    if (!dialog.open) dialog.showModal();
+    if (query) { $('#search-input').value = query; searchShows(query); }
+    else { $('#search-input').focus(); $('#search-status').textContent = 'Saisissez au moins deux caractères pour chercher.'; }
+  }
+  function renderSearchResults(shows) {
+    const out = $('#search-results');
+    if (!shows.length) { out.innerHTML = ''; return; }
+    out.innerHTML = shows.slice(0, 8).map(show => {
+      const image = core.safeImageUrl(show.image?.medium || show.image?.original);
+      const img = image ? `<img src="${escapeHTML(image)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : '<span class="result-placeholder" aria-hidden="true">c.</span>';
+      const summary = core.cleanSummary(show.summary);
+      const info = [show.language, ...(Array.isArray(show.genres) ? show.genres.slice(0, 2) : []), show.premiered?.slice(0, 4)].filter(Boolean).join(' · ') || 'Série';
+      const isFavorite = state.favorites.includes(show.id);
+      return `<article class="result-card">${img}<div class="result-copy"><h3>${escapeHTML(show.name || 'Série sans titre')}</h3><span class="result-meta">${escapeHTML(info)}</span><p>${escapeHTML(summary ? `${summary.slice(0, 170)}${summary.length > 170 ? '…' : ''}` : 'Aucun résumé fourni.')}</p><div class="result-actions"><button type="button" class="favorite-button${isFavorite ? ' saved' : ''}" data-favorite="${show.id}" aria-pressed="${isFavorite}">${isFavorite ? '♥ Dans vos favoris' : '♡ Ajouter aux favoris'}</button>${safeShowUrl(show.url) ? `<a href="${escapeHTML(safeShowUrl(show.url))}" target="_blank" rel="noopener noreferrer">Fiche TVmaze ↗</a>` : ''}<a href="https://www.youtube.com/results?search_query=${encodeURIComponent(`${show.name || ''} bande annonce`) }" target="_blank" rel="noopener noreferrer">Rechercher une bande-annonce ↗</a></div></div></article>`;
+    }).join('');
+    out.querySelectorAll('[data-favorite]').forEach(button => button.addEventListener('click', () => {
+      state.favorites = core.toggleFavorite(state.favorites, Number(button.dataset.favorite)); saveFavorites();
+      button.classList.toggle('saved', state.favorites.includes(Number(button.dataset.favorite)));
+      const saved = state.favorites.includes(Number(button.dataset.favorite)); button.textContent = saved ? '♥ Dans vos favoris' : '♡ Ajouter aux favoris'; button.setAttribute('aria-pressed', String(saved));
+      renderCatalogEmpty(); if (state.filter === 'favorites') renderFavoriteList();
+    }));
+  }
+  function safeShowUrl(value) {
+    try { const url = new URL(value); return url.protocol === 'https:' && url.hostname === 'www.tvmaze.com' ? url.href : ''; } catch (_) { return ''; }
+  }
+  async function searchShows(query) {
+    const q = query.trim(), status = $('#search-status');
+    if (state.controller) state.controller.abort();
+    if (q.length < 2) { status.textContent = 'Saisissez au moins deux caractères pour chercher.'; $('#search-results').innerHTML = ''; return; }
+    const controller = new AbortController(); state.controller = controller;
+    status.textContent = 'Recherche dans le catalogue TVmaze…'; $('#search-results').innerHTML = '';
+    try {
+      const response = await fetch(`https://api.tvmaze.com/search/shows?q=${encodeURIComponent(q)}`, { signal: controller.signal, headers: { Accept: 'application/json' } });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      if (!Array.isArray(data)) throw new Error('Réponse inattendue');
+      const shows = data.map(item => item && item.show).filter(show => show && Number.isInteger(show.id));
+      if (!shows.length) { status.textContent = 'Aucun résultat. Essayez un autre titre.'; return; }
+      status.textContent = `${shows.length} résultat${shows.length > 1 ? 's' : ''} · Catalogue TVmaze, pas un programme TV.`; renderSearchResults(shows);
+    } catch (error) {
+      if (error.name === 'AbortError') return;
+      status.textContent = 'Le catalogue TVmaze est momentanément indisponible. Vérifiez votre connexion puis réessayez.';
+    }
+  }
+  function renderCatalogEmpty() {
+    const count = state.favorites.length; $('#favorite-count').textContent = String(count);
+    const isFavorites = state.filter === 'favorites';
+    $('#catalog-empty-title').textContent = isFavorites ? (count ? 'Vos favoris vous attendent.' : 'Votre liste est encore vide.') : 'Un bon titre en tête ?';
+    $('#catalog-empty-copy').textContent = isFavorites ? (count ? 'Les fiches enregistrées sont conservées sur cet appareil.' : 'Ajoutez une série aux favoris depuis les résultats de recherche, et elle apparaîtra ici.') : 'Recherchez une série dans le catalogue public TVmaze. Vos favoris restent enregistrés sur cet appareil.';
+    $('#catalog-empty').classList.toggle('favorites-empty', isFavorites);
+    $('#catalog-search').hidden = isFavorites;
+  }
+  async function renderFavoriteList() {
+    const host = $('#catalog-results'); host.innerHTML = '';
+    if (!state.favorites.length) return;
+    host.innerHTML = '<p class="favorite-loading">Chargement de vos fiches enregistrées…</p>';
+    try {
+      const records = await Promise.all(state.favorites.map(async id => {
+        const response = await fetch(`https://api.tvmaze.com/shows/${id}`, { headers: { Accept: 'application/json' } });
+        if (!response.ok) return null;
+        const show = await response.json(); return show && show.id === id ? show : null;
+      }));
+      if (state.filter !== 'favorites') return;
+      const shows = core.visibleShows(records.filter(Boolean), state.favorites, 'favorites');
+      if (!shows.length) { host.innerHTML = '<p class="favorite-loading">Impossible de charger vos fiches pour le moment. Réessayez plus tard.</p>'; return; }
+      renderSearchResults(shows);
+      const results = $('#search-results'); host.innerHTML = results.innerHTML; results.innerHTML = '';
+      host.querySelectorAll('[data-favorite]').forEach(button => button.addEventListener('click', () => {
+        const id = Number(button.dataset.favorite); state.favorites = core.toggleFavorite(state.favorites, id); saveFavorites(); renderCatalogEmpty(); renderFavoriteList();
+      }));
+    } catch (_) { host.innerHTML = '<p class="favorite-loading">Impossible de charger vos fiches pour le moment. Vérifiez votre connexion.</p>'; }
+  }
+  function setFilter(filter) {
+    state.filter = filter;
+    document.querySelectorAll('.filter-button').forEach(button => { const active = button.dataset.filter === filter; button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active)); });
+    renderCatalogEmpty(); $('#catalog-results').innerHTML = '';
+    if (filter === 'favorites') renderFavoriteList();
+  }
+  $('#prev-day').addEventListener('click', () => { state.offset--; renderDate(); });
+  $('#next-day').addEventListener('click', () => { state.offset++; renderDate(); });
+  $('#today-button').addEventListener('click', () => { state.offset = 0; renderDate(); });
+  $('#theme-toggle').addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = next;
+    try { localStorage.setItem(core.THEME_KEY, next); } catch (_) { /* theme still works for this session */ }
+    $('#theme-toggle').setAttribute('aria-label', next === 'dark' ? 'Activer le thème clair' : 'Activer le thème sombre');
+    document.querySelector('meta[name="theme-color"]').content = next === 'dark' ? '#171a19' : '#f7f6f2';
+  });
+  try { const theme = localStorage.getItem(core.THEME_KEY); if (theme === 'dark' || theme === 'light') document.documentElement.dataset.theme = theme; } catch (_) { /* use the default theme */ }
+  $('#theme-toggle').setAttribute('aria-label', document.documentElement.dataset.theme === 'dark' ? 'Activer le thème clair' : 'Activer le thème sombre');
+  ['#search-open', '#search-open-secondary', '#catalog-search'].forEach(selector => $(selector).addEventListener('click', () => openSearch()));
+  document.querySelectorAll('.filter-button').forEach(button => button.addEventListener('click', () => setFilter(button.dataset.filter)));
+  $('#search-input').addEventListener('input', event => { clearTimeout(state.timer); state.timer = setTimeout(() => searchShows(event.target.value), 300); });
+  $('#dialog-close').addEventListener('click', () => $('#search-dialog').close());
+  $('#search-dialog').addEventListener('click', event => { if (event.target === $('#search-dialog')) $('#search-dialog').close(); });
+  document.addEventListener('keydown', event => {
+    if (event.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) { event.preventDefault(); openSearch(); }
+    if (event.key === 'Escape' && $('#search-dialog').open && state.controller) state.controller.abort();
+  });
+  renderDate(); renderCatalogEmpty(); $('#favorite-count').textContent = String(state.favorites.length);
+})();

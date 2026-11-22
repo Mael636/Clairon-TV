@@ -1,48 +1,48 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#111411">
-  <meta name="description" content="Clairon — le guide TV français, pensé comme un programme de salle.">
-  <title>Clairon — Le programme du soir</title>
+  <meta name="theme-color" content="#f7f6f2">
+  <meta name="description" content="Clairon — guide TV français transparent sur ses sources et ses données.">
+  <title>Clairon — Votre guide TV</title>
   <link rel="preconnect" href="https://api.tvmaze.com">
   <link rel="stylesheet" href="styles.css">
+  <script src="core.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
-  <div class="ambient ambient-one" aria-hidden="true"></div><div class="ambient ambient-two" aria-hidden="true"></div>
   <header class="topbar">
-    <a class="wordmark" href="#accueil" aria-label="Clairon, accueil"><span class="mark" aria-hidden="true">c.</span><span>clairon<span class="wordmark-dot">.</span></span></a>
-    <nav class="main-nav" aria-label="Navigation principale"><a class="nav-link active" href="#grille">Le guide</a><a class="nav-link" href="#direct">En direct <i class="nav-live-dot"></i></a></nav>
+    <a class="brand" href="#accueil" aria-label="Clairon, accueil"><span class="brand-mark">c<span>.</span></span><span>clairon</span></a>
+    <nav aria-label="Navigation principale"><a class="nav-link active" href="#guide">Le guide</a><a class="nav-link" href="#decouvrir">Découvrir</a></nav>
     <div class="top-actions">
-      <label class="search-box" for="search-input"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.4"></circle><path d="m16 16 4 4"></path></svg><input id="search-input" type="search" placeholder="Film, série, émission…" autocomplete="off"><kbd>/</kbd></label>
-      <button class="icon-button theme-toggle" id="theme-toggle" type="button" aria-label="Passer au thème clair" title="Changer de thème"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.7"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg></button>
-      <button class="avatar" type="button" aria-label="Profil invité">M</button>
+      <button id="search-open" class="search-shortcut" type="button"><span aria-hidden="true">⌕</span><span class="shortcut-label">Rechercher une série</span><kbd>/</kbd></button>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Activer le thème sombre" title="Changer de thème">◐</button>
     </div>
   </header>
-  <main id="accueil">
-    <section class="intro" aria-labelledby="page-title">
-      <div><p class="eyebrow"><span class="eyebrow-star">✳</span> VOTRE RENDEZ-VOUS DU SOIR</p><h1 id="page-title">La télé, <em>à votre façon.</em></h1><p class="intro-copy">Les histoires qui valent le détour. Toutes les chaînes, un seul endroit.</p></div>
-      <div class="date-pager"><button class="date-arrow" id="prev-day" aria-label="Jour précédent" type="button">←</button><button class="date-label" id="date-label" type="button" aria-label="Revenir à aujourd’hui"></button><button class="date-arrow" id="next-day" aria-label="Jour suivant" type="button">→</button></div>
+  <main id="accueil" class="shell">
+    <section class="hero" aria-labelledby="title">
+      <div class="hero-copy"><p class="eyebrow"><span class="eyebrow-dot"></span> LE GUIDE, SANS INTOX</p><h1 id="title">La télé, en toute <em>clarté.</em></h1><p class="hero-sub">Votre guide mérite de vraies informations. Ici, aucune grille n’est inventée.</p></div>
+      <div class="today-card"><span class="today-icon" aria-hidden="true">◷</span><div><span class="today-label">DATE SÉLECTIONNÉE</span><strong id="date-label"></strong></div><div class="date-buttons"><button id="prev-day" type="button" aria-label="Jour précédent">←</button><button id="today-button" type="button" aria-label="Revenir à aujourd’hui">Aujourd’hui</button><button id="next-day" type="button" aria-label="Jour suivant">→</button></div></div>
     </section>
-    <section class="live-section" id="direct" aria-labelledby="live-heading">
-      <div class="section-heading"><div><p class="eyebrow live-eyebrow"><span class="live-dot"></span> EN CE MOMENT</p><h2 id="live-heading">À l’antenne <span class="live-count" id="live-count"></span></h2></div><a class="text-link" href="#grille">Toute la grille <span>↗</span></a></div>
-      <div class="live-rail" id="live-rail" aria-live="polite"></div>
+    <section id="guide" class="guide-section" aria-labelledby="guide-title">
+      <div class="section-head"><div><p class="eyebrow">PROGRAMMATION</p><h2 id="guide-title">Le programme TV</h2></div><span class="source-chip"><i></i> Aucune source EPG autorisée configurée</span></div>
+      <div class="empty-card" role="status" aria-live="polite">
+        <div class="empty-illustration" aria-hidden="true"><span class="screen"><i></i><i></i><i></i></span><span class="stand"></span><span class="sparkle">✳</span></div>
+        <div class="empty-content"><span class="empty-kicker">PROGRAMME INDISPONIBLE</span><h3>On préfère le silence aux horaires inventés.</h3><p>Clairon ne dispose pas encore d’une source de programmes pour les chaînes françaises dont les données et les conditions de réutilisation ont pu être vérifiées. Nous n’affichons donc ni grille ni émissions « en direct ».</p><div class="source-explainer"><span class="info-mark">i</span><p><strong>Pourquoi pas un EPG public&nbsp;?</strong> XMLTV France publie des guides francophones, mais la disponibilité d’un fichier ne suffit pas à établir les droits de réutilisation et de republication. Aucune source n’est activée avant vérification de sa licence, de sa couverture et de ses conditions d’accès.</p></div><a class="source-link" href="https://www.xmltvfr.fr/xmltv.php" target="_blank" rel="noopener noreferrer">Consulter les fichiers XMLTV France <span aria-hidden="true">↗</span></a></div>
+      </div>
+      <div class="trust-note"><span aria-hidden="true">✓</span> Ici, les données réelles sont séparées du catalogue de découverte. TVmaze n’est pas une source de programmation TV française.</div>
     </section>
-    <section class="guide-section" id="grille" aria-labelledby="guide-heading">
-      <div class="section-heading guide-heading"><div><p class="eyebrow">LE PROGRAMME</p><h2 id="guide-heading">La grille</h2></div><div class="guide-tools"><span class="sample-note"><span class="sample-mark"></span> Grille de démonstration</span><div class="view-toggle" role="group" aria-label="Affichage"><button class="view-button selected" data-view="all" type="button">Toutes</button><button class="view-button" data-view="films" type="button">Films & séries</button></div></div></div>
-      <div class="grid-scroll" tabindex="0" aria-label="Grille de programmation défilante"><div class="tv-grid" id="tv-grid"></div></div>
-      <p class="grid-footnote">Les horaires et émissions ci-dessous sont des exemples fictifs, générés localement. Ils ne correspondent pas aux programmes réellement diffusés.</p>
+    <section class="discovery-section" id="decouvrir" aria-labelledby="discover-title">
+      <div class="section-head discovery-head"><div><p class="eyebrow">À EXPLORER</p><h2 id="discover-title">Vos séries, à vous.</h2><p class="section-sub">Parcourez le catalogue TVmaze et gardez vos trouvailles en favoris.</p></div><button id="search-open-secondary" class="primary-button" type="button"><span aria-hidden="true">⌕</span> Chercher une série</button></div>
+      <div class="catalog-toolbar"><div class="filter-tabs" role="group" aria-label="Filtrer les séries"><button class="filter-button active" data-filter="all" type="button">Découvrir</button><button class="filter-button" data-filter="favorites" type="button">Mes favoris <span id="favorite-count" class="count-badge">0</span></button></div><span class="catalog-label">CATALOGUE · TVMAZE</span></div>
+      <div id="catalog-empty" class="catalog-empty"><span class="catalog-icon" aria-hidden="true">✳</span><div><h3 id="catalog-empty-title">Un bon titre en tête&nbsp;?</h3><p id="catalog-empty-copy">Recherchez une série dans le catalogue public TVmaze. Vos favoris restent enregistrés sur cet appareil.</p></div><button id="catalog-search" class="text-button" type="button">Explorer le catalogue <span aria-hidden="true">→</span></button></div>
+      <div id="catalog-results" class="catalog-results" aria-live="polite"></div>
+      <p class="catalog-credit">Fiches, métadonnées et images chargées depuis <a href="https://www.tvmaze.com/api" target="_blank" rel="noopener noreferrer">TVmaze</a>. Disponibilité et droits des images selon TVmaze et leurs ayants droit.</p>
     </section>
-    <section class="discovery" aria-label="Découvrir">
-      <div class="discovery-copy"><span class="discovery-icon">↗</span><div><p class="eyebrow">UNE ENVIE EN TÊTE ?</p><h2>Suivez le fil.</h2><p>Recherchez une série et découvrez sa fiche grâce au catalogue TVmaze.</p></div></div>
-      <button class="discover-button" id="discover-button" type="button">Explorer les séries <span>→</span></button>
-    </section>
-    <footer class="footer"><a class="wordmark footer-mark" href="#accueil"><span class="mark">c.</span><span>clairon<span class="wordmark-dot">.</span></span></a><span>Le guide est à vous.</span><span>Catalogue : <a href="https://www.tvmaze.com/api" target="_blank" rel="noreferrer">TVmaze API</a> · Projet indépendant, sans affiliation.</span></footer>
+    <footer class="footer"><a class="brand footer-brand" href="#accueil"><span class="brand-mark">c<span>.</span></span><span>clairon</span></a><span>Un guide plus honnête, un programme à la fois.</span><span>Projet indépendant · <a href="https://www.tvmaze.com/api" target="_blank" rel="noopener noreferrer">Source catalogue : TVmaze</a></span></footer>
   </main>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <dialog class="show-dialog" id="show-dialog" aria-labelledby="dialog-title"><button class="dialog-close" id="dialog-close" type="button" aria-label="Fermer">×</button><div id="dialog-content"></div></dialog>
-  <dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title"><button class="dialog-close" id="search-close" type="button" aria-label="Fermer">×</button><p class="eyebrow">CATALOGUE TVMAZE</p><h2 id="search-title">Une série en tête ?</h2><p class="search-description">Cherchez parmi les séries référencées par TVmaze. Aucun compte ni aucune clé ne sont nécessaires.</p><label class="search-box modal-search" for="modal-search-input"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.4"></circle><path d="m16 16 4 4"></path></svg><input id="modal-search-input" type="search" placeholder="Ex. The Bear" autocomplete="off"></label><div id="search-results" class="search-results" aria-live="polite"></div><p class="api-note">Les résultats et les fiches détaillées sont fournis par TVmaze. Les horaires restent des exemples.</p></dialog>
+  <dialog id="search-dialog" class="search-dialog" aria-labelledby="search-title"><button id="dialog-close" class="dialog-close" type="button" aria-label="Fermer">×</button><p class="eyebrow">CATALOGUE TVMAZE</p><h2 id="search-title">Trouvez votre prochaine série.</h2><p class="dialog-intro">Cette recherche explore des séries, pas la grille des chaînes.</p><label class="search-field"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Un titre, une envie…" autocomplete="off"><kbd>ESC</kbd></label><div id="search-status" class="search-status" aria-live="polite">Saisissez au moins deux caractères pour chercher.</div><div id="search-results" class="search-results"></div><p class="dialog-credit">Résultats fournis par <a href="https://www.tvmaze.com/api" target="_blank" rel="noopener noreferrer">l’API TVmaze</a>. Les fiches peuvent comporter des images externes.</p></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
 </html>

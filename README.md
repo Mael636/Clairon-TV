@@ -1,37 +1,49 @@
 # Clairon
 
-Un guide TV français statique, sans publicité, qui donne à la programmation l’allure d’un petit programme de salle. Cette première version privilégie une grille lisible, l’ordre des chaînes, les programmes en cours et une recherche de fiches de séries.
+Clairon est une interface française de guide TV qui distingue strictement un **programme de diffusion vérifié** d'un **catalogue de séries**. Aucune chaîne, émission, heure ou information « en direct » n'est générée localement. Tant qu'une source EPG utilisable et dont les droits de réutilisation sont vérifiés n'est pas configurée, la grille reste volontairement vide et l'application explique pourquoi.
 
-## Lancer l’application
+## Lancer l'application
 
-Aucun build, gestionnaire de paquets, compte ni secret n’est requis. Ouvrez simplement `index.html` dans un navigateur récent. Pour servir le dossier en local :
+Aucun build, gestionnaire de paquets, compte, secret ou serveur applicatif n'est requis. Ouvrez `index.html` dans un navigateur récent, ou servez le dossier :
 
 ```sh
 python3 -m http.server 8000
 ```
 
-Puis ouvrez <http://localhost:8000>. La page et la grille de démonstration fonctionnent sans serveur applicatif. La recherche en catalogue requiert une connexion Internet. Le navigateur conserve le choix du thème localement.
+Puis ouvrez <http://localhost:8000>. Le thème choisi et les identifiants de favoris sont conservés localement dans le navigateur. La recherche de catalogue nécessite une connexion Internet.
 
-## Données et API
+## Sources et politique des données
 
-La grille (chaînes, intitulés, catégories, durées) est embarquée dans `app.js` et est **fictive** : les horaires sont recalculés autour de l’heure locale du navigateur, mais ne représentent aucune diffusion réelle. La date peut être parcourue, les fiches sont ouvertes depuis les cellules et « En direct » désigne le créneau de démonstration situé autour de l’heure locale.
+### Guide de diffusion
 
-La recherche de séries interroge l’API publique **TVmaze** (`https://api.tvmaze.com/search/shows?q=…`) directement depuis le navigateur. Elle peut afficher les métadonnées/résumés du catalogue et relier à sa fiche TVmaze. Les affiches renvoyées par TVmaze peuvent être chargées depuis leur hébergeur. Clairon ne possède pas de clé API et n’en exige aucune. La recherche de bande-annonce ouvre une recherche YouTube, elle ne certifie ni ne fournit une bande-annonce intégrée.
+Aucune source EPG n'est activée dans cette version. La page publique [XML TV FR – fichiers XML](https://www.xmltvfr.fr/xmltv.php) répertorie des guides XMLTV et indique pour le fichier TNT un programme disponible jusqu'à cinq jours; son site annonce une mise à jour journalière. Cela établit une source publique identifiable et une couverture déclarée, mais pas le droit de Clairon à traiter, mettre en cache ou republier ces programmes. [La documentation du générateur](https://www.xmltvfr.fr/docs.php) indique une licence Apache-2.0 pour le logiciel, ce qui **ne prouve pas à lui seul la licence ou les droits de republication des grilles collectées à partir de multiples sources**. Nous n'avons donc ni téléchargé ni intégré le flux : sans conditions explicites applicables aux données EPG et à leur republication, il n'est pas une source autorisée vérifiée pour cette application. Le lien de l'interface mène directement à la page des fichiers, sans présenter leur contenu comme validé ou exploitable par Clairon.
 
-- Documentation de l’API : <https://www.tvmaze.com/api>
-- Conditions d’utilisation : <https://www.tvmaze.com/terms-of-use>
+Avant d'activer un flux, il faudra examiner les conditions/licences en vigueur portant précisément sur les données EPG, identifier la source et l'attribution requise, confirmer la couverture des chaînes françaises, les règles de fréquence/mise en cache, et tester la fraîcheur, les fuseaux horaires, les identifiants des chaînes et les droits de republication. Faute de validation, l'état vide est le comportement attendu, pas un incident.
 
-## Fonctionnalités de cette version
+### Catalogue de séries
 
-- Grille responsive à six créneaux avec huit chaînes dans un ordre explicite.
-- Rangée « À l’antenne », indicateur de progression et fiches programme.
-- Filtre Films & séries, navigation par jour, mode clair/sombre et recherche catalogue.
-- Aucun emplacement publicitaire, SDK de suivi, backend ou secret.
+La recherche et les fiches de séries utilisent l'API publique [TVmaze](https://www.tvmaze.com/api) (`/search/shows` et `/shows/{id}`). C'est un catalogue éditorial, **pas** un EPG de chaînes françaises; ses résultats ne sont jamais introduits dans la grille. Les résumés sont rendus comme texte, les images externes chargées uniquement en HTTPS. Les favoris stockent uniquement des identifiants TVmaze sur l'appareil. Les fiches sortantes pointent vers TVmaze. Le bouton « Rechercher une bande-annonce » ouvre une recherche YouTube : il ne certifie ni ne fournit une vidéo, et n'annonce pas la disponibilité des droits. Consultez les [conditions d'utilisation de TVmaze](https://www.tvmaze.com/terms-of-use) et celles des ayants droit.
 
-## Limites connues
+## Fonctionnalités
 
-Il ne s’agit pas d’un guide de diffusion réel : pas d’EPG, pas de synchronisation avec un opérateur, pas de géolocalisation, de compte, de favoris ou de notifications. La composition de la grille ne change pas selon le jour. Les fiches des titres de démonstration ne sont pas des fiches de catalogue vérifiées. TVmaze est un catalogue de séries, pas une source de programmation des chaînes françaises; ses données et images dépendent de sa disponibilité, et sa couverture varie. Aucune bande-annonce n’est intégrée ou garantie.
+- État vide de programmation transparent; aucune grille de démonstration ou faux indicateur « en direct ».
+- Recherche de séries TVmaze avec états de chargement, absence de résultat et erreur réseau.
+- Fiches de catalogue, filtres Découvrir/Mes favoris et favoris conservés localement.
+- Navigation calendaire, thème clair/sombre, raccourci `/`, boîtes de dialogue accessibles, interface responsive et prise en compte de la réduction des animations.
+- Pas de compte, suivi, publicité, clé API ou backend.
 
-## Licence & attribution
+La navigation par date est prête côté interface mais ne peut pas afficher un programme sans flux EPG vérifié. Les filtres et la recherche concernent le catalogue de séries, et non les chaînes ni les horaires.
 
-Le code Clairon est fourni sous licence MIT (voir `LICENSE`). Les données et images récupérées à l’exécution restent soumises aux conditions de TVmaze et des ayants droit. Le nom et les marques des chaînes sont cités à titre indicatif pour cette maquette; aucun partenariat ni affiliation n’est revendiqué.
+## Tests
+
+Avec Node.js 18 ou plus récent :
+
+```sh
+node --test tests/core.test.js
+node --check app.js
+node --check core.js
+```
+
+## Licence et attribution
+
+Le code Clairon est fourni sous licence MIT (voir `LICENSE`). Les métadonnées/images TVmaze et marques tierces demeurent sous leurs propres conditions. Clairon est un projet indépendant, sans affiliation aux diffuseurs ou à TVmaze.
